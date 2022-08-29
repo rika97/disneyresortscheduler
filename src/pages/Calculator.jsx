@@ -1,8 +1,57 @@
 import React from 'react';
 import { Typography } from '@mui/material';
+import { useState, useEffect } from 'react';
+
+import axios from "axios";
 
 
 const Calculator = () => {
+  const [info, getInfo ] = useState();
+  useEffect(() => {
+    fetchData("958", "2022-08-30");
+    fetchData("922", "2022-08-30");
+    fetchData("952", "2022-08-30");
+    fetchData("949", "2022-08-30");
+    fetchData("964", "2022-08-30");
+    fetchData("961", "2022-08-30");
+    fetchData("916", "2022-08-30");
+    fetchData("973", "2022-08-30");
+    fetchData("970", "2022-08-30");
+    fetchData("925", "2022-08-30");
+    fetchData("913", "2022-08-30");
+    fetchData("994", "2022-08-30");
+    fetchData("910", "2022-08-30");
+    fetchData("940", "2022-08-30");
+    fetchData("937", "2022-08-30");
+    fetchData("943", "2022-08-30");
+    fetchData("997", "2022-08-30");
+    fetchData("955", "2022-08-30");
+    fetchData("988", "2022-08-30");
+    fetchData("991", "2022-08-30");
+    fetchData("967", "2022-08-30");
+    fetchData("976", "2022-08-30");
+    fetchData("934", "2022-08-30");
+    fetchData("919", "2022-08-30");
+    fetchData("982", "2022-08-30");
+    fetchData("979", "2022-08-30");
+    fetchData("946", "2022-08-30");
+    fetchData("928", "2022-08-30");
+}, []);
+
+
+  // API test
+  let waitList = []
+  const fetchData = (attractionId, dateId) => {
+    return axios.get(`http://localhost:5000/${attractionId}/${dateId}`)
+          .then((response) => {
+            const data = response.data;
+            waitList.push(data)
+            getInfo(waitList);
+          } );}
+
+  console.log(info)
+
+
   const waitTimesMatrix = {
     cols: [800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600, 1630,
             1700, 1730, 1800, 1830, 1900, 1930, 2000, 2030, 2100, 2130],
@@ -100,7 +149,7 @@ const Calculator = () => {
       waitTimesMatrix["data"][i].splice(startTimeIndex, endTimeIndex-startTimeIndex)
     };
   }
-  console.log(userSchedule)
+
   return (
     <div>
         <h2>Calculator</h2>
