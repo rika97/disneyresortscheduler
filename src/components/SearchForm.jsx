@@ -11,6 +11,7 @@ import moment from "moment";
 
 export default function SearchForm() {
   const today = new Date();
+  const [park, setPark] = React.useState("Tokyo DisneySea");
   const [entryDate, setEntryDate] = React.useState(today);
   const [entryTime, setEntryTime] = React.useState(900);
   const [leaveTime, setLeaveTime] = React.useState(2100);
@@ -24,7 +25,7 @@ export default function SearchForm() {
       setWarning("Leave time must be later than entry time!")
     } else {
       navigate('/results',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
-                            dateId: moment(entryDate.$d).format("YYYY-MM-DD"), }});
+                            dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
     }
   };
 
@@ -32,6 +33,19 @@ export default function SearchForm() {
     <div>  
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Stack spacing={3}  sx={{ width: 400 }}>
+          {/* Park */}
+          <Autocomplete
+            disablePortal
+            value={park}
+            options={["Tokyo Disneyland", "Tokyo DisneySea"]}
+            label="Park"
+            onChange={(event, newPark) => {
+              setPark(newPark);
+            }}
+            renderInput={(params) => <TextField {...params} label="Park" placeholder='Choose Park'/>}
+          />
+
+          {/* Entry Date */}
           <DatePicker
             label="Entry Date"
             value={entryDate}

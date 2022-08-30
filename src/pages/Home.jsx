@@ -6,7 +6,7 @@ import { Grid, Typography } from '@mui/material';
 const Home = () => {
   return (
     <div>
-        <Typography variant="h5" color="primary" sx={{mt: 3, mb: 3}}>Tokyo Disney Sea Scheduler</Typography>
+        <Typography variant="h5" color="primary" sx={{mt: 3, mb: 3}}>Tokyo Disney Resort Scheduler</Typography>
         <img src={homeImage} width={500} />
         <Grid container justifyContent = "center">
          <SearchForm />

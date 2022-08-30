@@ -16,9 +16,30 @@ const Results = () => {
       fetchData()
     }, [])
     
-    const attractionIdList = ["958", "922", "952", "949", "964", "961", "916", "973", "970", "925", "913", "994",
+    const seaAttractionIdList = ["958", "922", "952", "949", "964", "961", "916", "973", "970", "925", "913", "994",
                               "910", "940", "937", "943", "997", "955", "988", "991", "967", "976", "934", "919", "982",
                             "979", "946", "928"];
+
+    const seaAttractionNamesList = ['Aquatopia', 'Indy Jones Adventure: Temple of the Crystal Skull', 'Electric Railway (American Waterfront)',
+    'Electric Railway (Port Discovery)', 'Caravan Carousel', "Sindbad's Storybook Voyage", "Jasmine's Flying Carpet",
+    'Jumping Jellyfish', "Skuttle's Scooter", "Journey to the Center of the Earth", 'Soarin: Fantastic Flight',
+    'Turtle Talk', 'Toy Story Mania', 'Transit Steamer Line (American Waterfront)', 'Transit Steamer Line (Mediterranean Harbour)',
+    'Transit Steamer Line (Lost River Delta)', 'Nemo and Friends Sea Rider', 'Big City Vehicle', 'Fortress Exploration', 'Leonardo Challenge',
+    "Flounder's Flying Fish", 'Blowfish Balloon Race', 'Magic Lamp Theatre', 'Mermaid Lagoon Theatre', 'Raging Sprits', 'Whirlpool', 
+    'Venetian Gondola', '20,000 Leagues Under the Sea'];
+
+    const landAttractionIdList = ["853", "775", "772", "727", '718', '709', '712', '730', '793', '766', '799', '754', '715',
+                                  '721', '805', '841', '742', '808', '790', '739', '796', '811', '736', '745', '760', '748',
+                                  '778', '844', '829', '769', '757', '784', '823', '781', '751', '763', '847', '733', '724'];
+
+    const landAttractionNamesList = ['Photo Location: Happy Fair Labo', "Alice's Tea Party", "It's a Small World",
+    "Western Land Shooting Gallery", "Western River Railroad", "Omnibus", 'Pirates of the Carribean', 'Country Bear Theatre',
+    "Gadget's Go Coaster", 'Castle Carousel', "Goofy's Paint 'n' Play House", "Cinderella's Fairytale Hall", 'Jungle Cruise',
+    'Swiss Family Tree House', 'Star Tours', 'Stitch Encounter', 'Splash Mountain', 'Space Mountain', "Chip 'n Dale's Treehouse",
+    'Tom Sawyer Island Rafts', "Donald's Boat", "Buzz Lightyear's Astro Blasters", 'Big Thunder Mountain', 'Beaver Brothers Explorer Canoes',
+    "Pinocchio's Daring Journey", "Peter Pan's Flight", "Pooh's Hunny Hunt", "The Happy Ride with Baymax", "Penny Arcade", "Haunted Mansion",
+    "Mickey's PhilharMagic", "Minnie's House", "Monsters, Inc. Ride & Go Seek", "Roger Rabbit's Car Toon Spin", "Snow White's Adventures",
+    "Dumbo the Flying Elephant", "Enchanted Tale of Beauty and the Beast", "Mark Twain Riverboat", "The Enchanted Tiki Room"];
 
     const openTimes = [800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600, 1630,
       1700, 1730, 1800, 1830, 1900, 1930, 2000, 2030, 2100, 2130];
@@ -30,6 +51,21 @@ const Results = () => {
       const entryTime = location.state.entryTime;
       const leaveTime = location.state.leaveTime;
       const dateId = location.state.dateId;
+      const park = location.state.park;
+      let attractionIdList = ""
+      let attractionNamesList = ""
+
+      if (park === "Tokyo DisneySea") {
+        attractionIdList = seaAttractionIdList;
+      } else {
+        attractionIdList = landAttractionIdList;
+      };
+
+      if (park === "Tokyo DisneySea") {
+        attractionNamesList = seaAttractionNamesList;
+      } else {
+        attractionNamesList = landAttractionNamesList;
+      };
 
 
       const entryTimeIndex = openTimes.indexOf(entryTime)
@@ -53,13 +89,7 @@ const Results = () => {
           
       const waitTimesMatrix = {
         cols: availableTimesList,
-        rows: ['Aquatopia', 'Indy Jones Adventure: Temple of the Crystal Skull', 'Electric Railway (American Waterfront)',
-                'Electric Railway (Port Discovery)', 'Caravan Carousel', "Sindbad's Storybook Voyage", "Jasmine's Flying Carpet",
-                'Jumping Jellyfish', "Skuttle's Scooter", "Journey to the Center of the Earth", 'Soarin: Fantastic Flight',
-                'Turtle Talk', 'Toy Story Mania', 'Transit Steamer Line (American Waterfront)', 'Transit Steamer Line (Mediterranean Harbour)',
-                'Transit Steamer Line (Lost River Delta)', 'Nemo and Friends Sea Rider', 'Big City Vehicle', 'Fortress Exploration', 'Leonardo Challenge',
-                "Flounder's Flying Fish", 'Blowfish Balloon Race', 'Magic Lamp Theatre', 'Mermaid Lagoon Theatre', 'Raging Sprits', 'Whirlpool', 
-                'Venetian Gondola', '20,000 Leagues Under the Sea'],
+        rows: attractionNamesList,
         data: waitList
       };
 
@@ -131,9 +161,8 @@ const Results = () => {
       });
 
       setDisplayData(displaySchedule);
-      setDisplayHeader([dateId, entryTime, leaveTime]);
+      setDisplayHeader([park, dateId, entryTime, leaveTime]);
       setIsLoading(false);
-      console.log(displaySchedule)
       };
 
       if(isLoading) {
@@ -156,7 +185,7 @@ const Results = () => {
     <div>
         <Typography variant="h4" color="primary" sx={{mt: 7}}>Suggested Plan</Typography>
         <Typography sx={{mt: 2}} variant="h6">{displayHeader[0]}</Typography>
-        <Typography sx={{mb: 5}} variant="h6">{displayHeader[1]}~{displayHeader[2]}</Typography>
+        <Typography sx={{mb: 5}} variant="h6">{displayHeader[1]} {displayHeader[2]}~{displayHeader[3]}</Typography>
         {Object.entries(displayData).map(([key, value]) => (
         <Typography key={key}> {value[0][0]}~{value[0][1]}: {value[1]} ({value[2]} mins)</Typography>
       ))}
