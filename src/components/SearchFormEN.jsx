@@ -12,10 +12,10 @@ import timeOptions from './TimeOptions';
 
 
 
-export default function SearchFormEN() {
+export default function SearchForm() {
   const today = new Date();
   const currentTime = parseInt(moment(today).format('HH:mm').replace(":", ""));
-  const [park, setPark] = React.useState("東京ディズニーシー 🌏");
+  const [park, setPark] = React.useState("Tokyo DisneySea 🌏");
   const [entryDate, setEntryDate] = React.useState(today);
   const [entryTime, setEntryTime] = React.useState(900);
   const [leaveTime, setLeaveTime] = React.useState(2100);
@@ -26,11 +26,11 @@ export default function SearchFormEN() {
 
   const toResults=()=>{
     if (leaveTime <= entryTime) {
-      setWarning("退園時刻は入園時刻よりも後でなければいけません")
+      setWarning("Leave time must be later than entry time!")
     } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
-      setWarning("入園時刻は現時刻よりも後でなければいけません")
+      setWarning("Entry time must be later than current time!")
     } else {
-      navigate('/results',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
+      navigate('/results-en',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
     }
   };
@@ -45,17 +45,17 @@ export default function SearchFormEN() {
           <Autocomplete
             disablePortal
             value={park}
-            options={["東京ディズニーランド 🏰", "東京ディズニーシー 🌏"]}
-            label="パーク"
+            options={["Tokyo Disneyland 🏰", "Tokyo DisneySea 🌏"]}
+            label="Park"
             onChange={(event, newPark) => {
               setPark(newPark);
             }}
-            renderInput={(params) => <TextField {...params} label="パーク" placeholder='パークを選択'/>}
+            renderInput={(params) => <TextField {...params} label="Park" placeholder='Choose Park'/>}
           />
 
           {/* Entry Date */}
           <DatePicker
-            label="入園日"
+            label="Entry Date"
             value={entryDate}
             minDate={today}
             inputFormat="YYYY-MM-DD"
@@ -69,32 +69,32 @@ export default function SearchFormEN() {
           <Autocomplete
             disablePortal
             options={timeOptions}
-            label="入園時刻"
+            label="Entry Time"
             onChange={(event, newEntryTime) => {
               setEntryTime(newEntryTime?.timeValue);
             }}
             getOptionLabel={(option) => option.label}
-            renderInput={(params) => <TextField {...params} label="入園時刻" placeholder='入園時刻'/>}
+            renderInput={(params) => <TextField {...params} label="Park Entry Time" placeholder='Park Entry Time'/>}
           />
 
           {/* Leave Time */}
           <Autocomplete
             disablePortal
             options={timeOptions}
-            label="退園時刻"
+            label="Leave Time"
             onChange={(event, newLeaveTime) => {
               setLeaveTime(newLeaveTime?.timeValue);
             }}
             getOptionLabel={(option) => option.label}
-            renderInput={(params) => <TextField {...params} label="退園時刻" placeholder='退園時刻'/>}
+            renderInput={(params) => <TextField {...params} label="Park Leave Time" placeholder='Park Leave Time'/>}
           />
 
           {/* Number of Rides */}
           <Typography align="left" variant="subtitle1" gutterBottom>
-          体験するアトラクションの最高数:
+            Max. Number of Rides:
           </Typography>
           <Slider
-            aria-label="体験するアトラクションの最高数"
+            aria-label="Number of Rides"
             defaultValue={7}
             valueLabelDisplay="auto"
             step={1}
@@ -109,7 +109,7 @@ export default function SearchFormEN() {
           {/* Warning Field and Submit Button */}
           <Typography color="error" variant="body2">{warning}</Typography>
           <Button variant="contained" endIcon={<AutoAwesomeIcon />}
-            onClick={()=>{toResults()}}>検索</Button>
+            onClick={()=>{toResults()}}>Enter</Button>
         </Stack>
       </LocalizationProvider>
     </div>

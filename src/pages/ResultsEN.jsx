@@ -4,9 +4,9 @@ import axios from "axios";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
-import seaAttractionDict from '../components/SeaAttractionDict';
-import landAttractionDict from '../components/LandAttractionDict';
-import Navbar from '../components/Navbar';
+import seaAttractionDictEN from '../components/SeaAttractionDictEN';
+import landAttractionDictEN from '../components/LandAttractionDictEN';
+import NavbarEN from '../components/NavbarEN';
 
 
 const Results = () => {
@@ -37,10 +37,10 @@ const Results = () => {
       const park = location.state.park;
       let attractionDict = "";
 
-      if (park === "東京ディズニーシー 🌏") {
-        attractionDict = seaAttractionDict;
+      if (park === "Tokyo DisneySea 🌏") {
+        attractionDict = seaAttractionDictEN;
       } else {
-        attractionDict = landAttractionDict;
+        attractionDict = landAttractionDictEN;
       };
 
       const entryTimeIndex = openTimes.indexOf(entryTime)
@@ -148,7 +148,7 @@ const Results = () => {
             <CircularProgress size="7em" />
           </Box>
           <Box sx={{mt: 5}} display="flex" alignItems="center" justifyContent="center">
-            <Typography variant="h4" color="primary">しばらくお待ちください... 🎡🎢🎠</Typography>
+            <Typography variant="h4" color="primary">Loading Results... 🎡🎢🎠</Typography>
           </Box>
         </Paper>
         );
@@ -158,16 +158,16 @@ const Results = () => {
 
   return (
     <div>
-        <Navbar />
-        <Typography variant="h4" color="primary" sx={{mt: 7}}>おすすめスケジュール</Typography>
+        <NavbarEN />
+        <Typography variant="h4" color="primary" sx={{mt: 7}}>Suggested Plan</Typography>
         <Typography sx={{mt: 3}} variant="h6">{displayHeader[0]}</Typography>
         <Typography variant="h6">{displayHeader[1]}</Typography>
         <Typography sx={{mb: 5}} variant="h6">{displayHeader[2]}~{displayHeader[3]}</Typography>
         {Object.entries(displayData).map(([key, value]) => (
-        <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]}分)</Typography>
+        <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]} mins)</Typography>
       ))}
-        <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（待ち時間はあくまで予想です。）</Typography>
-        <Button variant="outlined" onClick={()=>{navigate('/')}}>戻る</Button>
+        <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（Wait times are merely estimates.）</Typography>
+        <Button variant="outlined" onClick={()=>{navigate('/en')}}>Go Back</Button>
     </div>
   )
 }

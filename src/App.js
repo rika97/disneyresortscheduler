@@ -1,5 +1,5 @@
 import './App.css';
-import { Home, Results } from './pages';
+import { Home, Results, HomeEN, ResultsEN } from './pages';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import CssBaseline from '@mui/material/CssBaseline'
@@ -10,7 +10,7 @@ function App() {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#12c9de'
+        main: '#0097a7'
       }
     }
   });
@@ -22,7 +22,9 @@ function App() {
         <div className="App">
           <Routes>
             <Route exact path="/" element={<Home />} />
+            <Route exact path="/en" element={<HomeEN />} />
             <Route exact path="/results" element={<Results />} />
+            <Route exact path="/results-en" element={<ResultsEN />} />
           </Routes>
         </div>
       </BrowserRouter>
