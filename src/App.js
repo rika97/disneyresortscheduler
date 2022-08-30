@@ -1,5 +1,5 @@
 import './App.css';
-import { Home, Calculator } from './pages';
+import { Home, Results } from './pages';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import CssBaseline from '@mui/material/CssBaseline'
@@ -22,7 +22,7 @@ function App() {
         <div className="App">
           <Routes>
             <Route exact path="/" element={<Home />} />
-            <Route exact path="/calculator" element={<Calculator />} />
+            <Route exact path="/results" element={<Results />} />
           </Routes>
         </div>
       </BrowserRouter>

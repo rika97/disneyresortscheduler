@@ -1,38 +1,58 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Paper, CircularProgress, Box } from '@mui/material';
 import axios from "axios";
 import { useState, useEffect } from 'react';
+import {useLocation} from 'react-router-dom';
 
 
-const Calculator = () => {
+const Results = () => {
+    const [displayHeader, setDisplayHeader] = useState('');
+    const [displayData, setDisplayData] = useState('');
+    const [isLoading, setIsLoading] = useState('true');
+    const location = useLocation();
 
-    const [displayData, setDisplayData] = useState('')
 
     useEffect(() => {
       fetchData()
     }, [])
     
     const attractionIdList = ["958", "922", "952", "949", "964", "961", "916", "973", "970", "925", "913", "994",
-                              "910", "940", "937", "943", "997", "995", "998", "991", "967", "976", "934", "919", "982",
+                              "910", "940", "937", "943", "997", "955", "988", "991", "967", "976", "934", "919", "982",
                             "979", "946", "928"];
 
-    const dateId = "2022-08-31";
+    const openTimes = [800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600, 1630,
+      1700, 1730, 1800, 1830, 1900, 1930, 2000, 2030, 2100, 2130];
+
 
     const fetchData = async () => {
+ 
       let waitList = [];
+      const entryTime = location.state.entryTime;
+      const leaveTime = location.state.leaveTime;
+      const dateId = location.state.dateId;
+
+
+      const entryTimeIndex = openTimes.indexOf(entryTime)
+      // minus 1 since attractions close queues 30 min before
+      const leaveTimeIndex = openTimes.indexOf(leaveTime)-1
+
+      // assumes one ride can be attained within 30 minutes. Number of Rides is whichever smaller, 
+      // users' input or a physically attainable number.
+      const numberOfRides = Math.min(location.state.numberOfRides, leaveTimeIndex-entryTimeIndex);
+
 
       for (let i=0; i < attractionIdList.length; i++) {
         const {data} = await axios.get(`http://localhost:5000/${attractionIdList[i]}/${dateId}`)
-        waitList.push(data)
+        const availableTimesData = data.splice(entryTimeIndex, leaveTimeIndex-entryTimeIndex+1)
+        waitList.push(availableTimesData)
       }
 
+      
+      const availableTimesList = openTimes.splice(entryTimeIndex, leaveTimeIndex-entryTimeIndex+1)
 
-      // user input, max cap at 15
-      const numberOfRides = 15;
           
       const waitTimesMatrix = {
-        cols: [800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600, 1630,
-                1700, 1730, 1800, 1830, 1900, 1930, 2000, 2030, 2100, 2130],
+        cols: availableTimesList,
         rows: ['Aquatopia', 'Indy Jones Adventure: Temple of the Crystal Skull', 'Electric Railway (American Waterfront)',
                 'Electric Railway (Port Discovery)', 'Caravan Carousel', "Sindbad's Storybook Voyage", "Jasmine's Flying Carpet",
                 'Jumping Jellyfish', "Skuttle's Scooter", "Journey to the Center of the Earth", 'Soarin: Fantastic Flight',
@@ -73,7 +93,10 @@ const Calculator = () => {
         const endTimeMin = (startTime%100+totalTime%60)%60
         const endTime = endTimeHour*100+endTimeMin
         const timeWindow = [startTime, endTime]
-        userSchedule.push([timeWindow, maxWait["attraction"], maxWait["waitTime"] ])
+        if ((maxWait["waitTime"] !== Infinity)) {
+          userSchedule.push([timeWindow, maxWait["attraction"], maxWait["waitTime"] ])
+        }
+        
 
         // delete this ride from matrix
         const rideIndex = waitTimesMatrix["rows"].indexOf(maxWait["attraction"])
@@ -95,23 +118,50 @@ const Calculator = () => {
         };
       };
 
+      // print everything without NaN data
+      const displaySchedule = [];
+      for (let i=0; i < userSchedule.length; i++) {
+        if (userSchedule[i][1] !== '') {
+          displaySchedule.push(userSchedule[i])
+        }
+      };
 
-      userSchedule.sort(function(a, b) {
+      displaySchedule.sort(function(a, b) {
         return a[0][0] - b[0][0];
       });
-      setDisplayData(userSchedule);
-      }
-      console.log(displayData)
+
+      setDisplayData(displaySchedule);
+      setDisplayHeader([dateId, entryTime, leaveTime]);
+      setIsLoading(false);
+      console.log(displaySchedule)
+      };
+
+      if(isLoading) {
+        return (
+        <Paper elevation={0}>
+          <Box sx={{mt: 20}}display="flex" alignItems="center" justifyContent="center">
+            <CircularProgress size="7em" />
+          </Box>
+          <Box sx={{mt: 5}} display="flex" alignItems="center" justifyContent="center">
+            <Typography variant="h4" color="primary">Loading Results 🎡🎢🎠</Typography>
+          </Box>
+        </Paper>
+        );
+      };
+
+
+
 
   return (
     <div>
-        <h2>Calculator</h2>
-        {/* {displayData} */}
+        <Typography variant="h4" color="primary" sx={{mt: 7}}>Suggested Plan</Typography>
+        <Typography sx={{mt: 2}} variant="h6">{displayHeader[0]}</Typography>
+        <Typography sx={{mb: 5}} variant="h6">{displayHeader[1]}~{displayHeader[2]}</Typography>
         {Object.entries(displayData).map(([key, value]) => (
-        <Typography key={key}> {value[0][0]}~{value[0][1]}: {value[1]}, {value[2]} mins</Typography>
+        <Typography key={key}> {value[0][0]}~{value[0][1]}: {value[1]} ({value[2]} mins)</Typography>
       ))}
     </div>
   )
 }
 
-export default Calculator;
+export default Results;
