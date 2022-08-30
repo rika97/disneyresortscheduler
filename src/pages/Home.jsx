@@ -8,7 +8,7 @@ const Home = () => {
     <div>
         <Typography variant="h5" color="primary" sx={{mt: 3, mb: 3}}>Tokyo Disney Resort Scheduler</Typography>
         <img src={homeImage} width={500} />
-        <Grid container justifyContent = "center">
+        <Grid sx={{ mb: 5}} container justifyContent = "center">
          <SearchForm />
         </Grid>
     </div>

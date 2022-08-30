@@ -1,17 +1,21 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Stack, TextField, Autocomplete, Button, Slider, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { useNavigate } from 'react-router-dom';
-import timeOptions from './TimeOptions';
 import moment from "moment";
+
+import timeOptions from './TimeOptions';
+
+
 
 export default function SearchForm() {
   const today = new Date();
-  const [park, setPark] = React.useState("Tokyo DisneySea");
+  const currentTime = parseInt(moment(today).format('HH:mm').replace(":", ""));
+  const [park, setPark] = React.useState("Tokyo DisneySea 🌏");
   const [entryDate, setEntryDate] = React.useState(today);
   const [entryTime, setEntryTime] = React.useState(900);
   const [leaveTime, setLeaveTime] = React.useState(2100);
@@ -23,21 +27,25 @@ export default function SearchForm() {
   const toResults=()=>{
     if (leaveTime <= entryTime) {
       setWarning("Leave time must be later than entry time!")
+    } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
+      setWarning("Entry time must be later than current time!")
     } else {
       navigate('/results',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
     }
   };
 
+
+
   return (
     <div>  
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Stack spacing={3}  sx={{ width: 400 }}>
+        <Stack spacing={2}  sx={{ width: 400 }}>
           {/* Park */}
           <Autocomplete
             disablePortal
             value={park}
-            options={["Tokyo Disneyland", "Tokyo DisneySea"]}
+            options={["Tokyo Disneyland 🏰", "Tokyo DisneySea 🌏"]}
             label="Park"
             onChange={(event, newPark) => {
               setPark(newPark);
@@ -97,7 +105,7 @@ export default function SearchForm() {
             }}
           />
           <Typography color="error" variant="body2">{warning}</Typography>
-          <Button variant="contained" endIcon={<AutoAwesomeIcon />} 
+          <Button variant="contained" endIcon={<AutoAwesomeIcon />}
             onClick={()=>{toResults()}}>Enter</Button>
         </Stack>
       </LocalizationProvider>
