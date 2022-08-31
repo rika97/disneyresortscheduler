@@ -1,41 +1,52 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Stack, TextField, Autocomplete, Button, Slider, Typography } from '@mui/material';
+import { Stack, TextField, Autocomplete, Button, Typography, Checkbox } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 import moment from "moment";
 
 import timeOptions from './TimeOptions';
+import seaAttractionDict from './SeaAttractionDictEN';
+import landAttractionDict from './LandAttractionDictEN';
 
 
 
-export default function SearchForm() {
+export default function SearchFormEN() {
   const today = new Date();
   const currentTime = parseInt(moment(today).format('HH:mm').replace(":", ""));
-  const [park, setPark] = React.useState("Tokyo DisneySea 🌏");
+  const [park, setPark] = React.useState("");
   const [entryDate, setEntryDate] = React.useState(today);
   const [entryTime, setEntryTime] = React.useState(900);
   const [leaveTime, setLeaveTime] = React.useState(2100);
+  const [attractionOptions, setAttractionOptions] = React.useState("");
   const [warning, setWarning] = React.useState("");
-  const [numberOfRides, setNumberOfRides] = React.useState(7);
+  const [attractionDict, setAttractionDict] = React.useState({});
   const navigate = useNavigate();
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
 
 
   const toResults=()=>{
-    if (leaveTime <= entryTime) {
-      setWarning("Leave time must be later than entry time!")
+    if (park ==="") {
+      setWarning("Must choose a park.")
+    } else if (leaveTime <= entryTime) {
+      setWarning("Leave time must be later than entry time.")
     } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
-      setWarning("Entry time must be later than current time!")
+      setWarning("Entry time must be later than current time.")
+    } else if (attractionOptions.length === 0) {
+      setWarning("Must choose atleast 1 attraction.")
     } else {
-      navigate('/results-en',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
+      navigate('/results-en',{state:{attractionOptions: attractionOptions, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
     }
   };
-
-
 
   return (
     <div>  
@@ -46,9 +57,14 @@ export default function SearchForm() {
             disablePortal
             value={park}
             options={["Tokyo Disneyland 🏰", "Tokyo DisneySea 🌏"]}
-            label="Park"
+            label="パーク"
             onChange={(event, newPark) => {
               setPark(newPark);
+              if (newPark === "Tokyo Disneyland 🏰") {
+                setAttractionDict(landAttractionDict)
+              } else {
+                setAttractionDict(seaAttractionDict)
+              }
             }}
             renderInput={(params) => <TextField {...params} label="Park" placeholder='Choose Park'/>}
           />
@@ -58,6 +74,7 @@ export default function SearchForm() {
             label="Entry Date"
             value={entryDate}
             minDate={today}
+            maxDate={new Date(today.getTime()+60*60*24*30*1000)}
             inputFormat="YYYY-MM-DD"
             onChange={(newDate) => {
               setEntryDate(newDate);
@@ -74,7 +91,7 @@ export default function SearchForm() {
               setEntryTime(newEntryTime?.timeValue);
             }}
             getOptionLabel={(option) => option.label}
-            renderInput={(params) => <TextField {...params} label="Park Entry Time" placeholder='Park Entry Time'/>}
+            renderInput={(params) => <TextField {...params} label="Entry Time" placeholder='Entry Time'/>}
           />
 
           {/* Leave Time */}
@@ -86,23 +103,32 @@ export default function SearchForm() {
               setLeaveTime(newLeaveTime?.timeValue);
             }}
             getOptionLabel={(option) => option.label}
-            renderInput={(params) => <TextField {...params} label="Park Leave Time" placeholder='Park Leave Time'/>}
+            renderInput={(params) => <TextField {...params} label="Leave Time" placeholder='Leave Time'/>}
           />
 
-          {/* Number of Rides */}
-          <Typography align="left" variant="subtitle1" gutterBottom>
-            Max. Number of Rides:
-          </Typography>
-          <Slider
-            aria-label="Number of Rides"
-            defaultValue={7}
-            valueLabelDisplay="auto"
-            step={1}
-            min={1}
-            max={15}
-            onChange={(event, newNumber) => {
-              setNumberOfRides(newNumber);
+          {/* Select possible attractions */}
+          <Autocomplete
+            multiple
+            size="small"
+            options={Object.keys(attractionDict)}
+            disableCloseOnSelect
+            onChange={(event, newOptions) => {
+              setAttractionOptions(newOptions);
             }}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Attractions to consider" placeholder="Choose attractions" />
+            )}
           />
 
 

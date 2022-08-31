@@ -1,12 +1,12 @@
 import React from 'react';
-import { Typography, Paper, CircularProgress, Box, Button } from '@mui/material';
+import { Typography, Paper, CircularProgress, Box, Button, Grid } from '@mui/material';
 import axios from "axios";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
-import seaAttractionDict from '../components/SeaAttractionDict';
-import landAttractionDict from '../components/LandAttractionDict';
-import Navbar from '../components/Navbar';
+import seaAttractionDictEN from '../components/SeaAttractionDictEN';
+import landAttractionDictEN from '../components/LandAttractionDictEN';
+import NavbarEN from '../components/NavbarEN';
 
 
 const Results = () => {
@@ -35,21 +35,28 @@ const Results = () => {
       const leaveTime = location.state.leaveTime;
       const dateId = location.state.dateId;
       const park = location.state.park;
-      let attractionDict = "";
+      const attractionOptions = location.state.attractionOptions;
+      let attractionDict = {};
 
-      if (park === "東京ディズニーシー 🌏") {
-        attractionDict = seaAttractionDict;
+
+      if (park === "東京ディズニーランド 🏰") {
+        for (let i=0; i < attractionOptions.length; i++) {
+          attractionDict[attractionOptions[i]] = landAttractionDictEN[attractionOptions[i]]
+        }
       } else {
-        attractionDict = landAttractionDict;
+        for (let i=0; i < attractionOptions.length; i++) {
+          attractionDict[attractionOptions[i]] = seaAttractionDictEN[attractionOptions[i]]
+        }
       };
 
       const entryTimeIndex = openTimes.indexOf(entryTime)
       // minus 1 since attractions close queues 30 min before
       const leaveTimeIndex = openTimes.indexOf(leaveTime)-1
 
+
       // assumes one ride can be attained within 30 minutes. Number of Rides is whichever smaller, 
       // users' input or a physically attainable number.
-      const numberOfRides = Math.min(location.state.numberOfRides, leaveTimeIndex-entryTimeIndex);
+      const numberOfRides = Math.min(attractionOptions.length, leaveTimeIndex-entryTimeIndex);
 
 
       for (let i=0; i < Object.values(attractionDict).length; i++) {
@@ -148,7 +155,7 @@ const Results = () => {
             <CircularProgress size="7em" />
           </Box>
           <Box sx={{mt: 5}} display="flex" alignItems="center" justifyContent="center">
-            <Typography variant="h4" color="primary">しばらくお待ちください... 🎡🎢🎠</Typography>
+            <Typography variant="h4" color="primary">Loading...🎡🎢🎠</Typography>
           </Box>
         </Paper>
         );
@@ -158,16 +165,18 @@ const Results = () => {
 
   return (
     <div>
-        <Navbar />
-        <Typography variant="h4" color="primary" sx={{mt: 7}}>おすすめスケジュール</Typography>
-        <Typography sx={{mt: 3}} variant="h6">{displayHeader[0]}</Typography>
-        <Typography variant="h6">{displayHeader[1]}</Typography>
-        <Typography sx={{mb: 5}} variant="h6">{displayHeader[2]}~{displayHeader[3]}</Typography>
-        {Object.entries(displayData).map(([key, value]) => (
-        <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]}分)</Typography>
-      ))}
-        <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（待ち時間はあくまで予想です。）</Typography>
-        <Button variant="outlined" onClick={()=>{navigate('/')}}>戻る</Button>
+        <NavbarEN />
+        <Grid sx={{ mb:4 }}>
+          <Typography variant="h4" color="primary" sx={{mt: 4}}>Suggested Itinerary</Typography>
+          <Typography sx={{mt: 1}} variant="h6">{displayHeader[0]}</Typography>
+          <Typography variant="h6">{displayHeader[1]}</Typography>
+          <Typography sx={{mb: 2}} variant="h6">{displayHeader[2]}~{displayHeader[3]}</Typography>
+          {Object.entries(displayData).map(([key, value]) => (
+          <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]} mins)</Typography>
+        ))}
+          <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（Wait times are merely predictions.）</Typography>
+          <Button variant="outlined" onClick={()=>{navigate('/')}}>Go back</Button>
+        </Grid>
     </div>
   )
 }

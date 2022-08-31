@@ -1,41 +1,52 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Stack, TextField, Autocomplete, Button, Slider, Typography } from '@mui/material';
+import { Stack, TextField, Autocomplete, Button, Typography, Checkbox } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 import moment from "moment";
 
 import timeOptions from './TimeOptions';
+import seaAttractionDict from './SeaAttractionDict';
+import landAttractionDict from './LandAttractionDict';
 
 
 
 export default function SearchFormEN() {
   const today = new Date();
   const currentTime = parseInt(moment(today).format('HH:mm').replace(":", ""));
-  const [park, setPark] = React.useState("東京ディズニーシー 🌏");
+  const [park, setPark] = React.useState("");
   const [entryDate, setEntryDate] = React.useState(today);
   const [entryTime, setEntryTime] = React.useState(900);
   const [leaveTime, setLeaveTime] = React.useState(2100);
+  const [attractionOptions, setAttractionOptions] = React.useState("");
   const [warning, setWarning] = React.useState("");
-  const [numberOfRides, setNumberOfRides] = React.useState(7);
+  const [attractionDict, setAttractionDict] = React.useState({});
   const navigate = useNavigate();
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
 
 
   const toResults=()=>{
-    if (leaveTime <= entryTime) {
+    if (park ==="") {
+      setWarning("パークを選択してください")
+    } else if (leaveTime <= entryTime) {
       setWarning("退園時刻は入園時刻よりも後でなければいけません")
     } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
       setWarning("入園時刻は現時刻よりも後でなければいけません")
+    } else if (attractionOptions.length === 0) {
+      setWarning("アトラクションを一つ以上選択してください")
     } else {
-      navigate('/results',{state:{numberOfRides:numberOfRides, entryTime: entryTime, leaveTime: leaveTime,
+      navigate('/results',{state:{attractionOptions: attractionOptions, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
     }
   };
-
-
 
   return (
     <div>  
@@ -49,6 +60,11 @@ export default function SearchFormEN() {
             label="パーク"
             onChange={(event, newPark) => {
               setPark(newPark);
+              if (newPark === "東京ディズニーランド 🏰") {
+                setAttractionDict(landAttractionDict)
+              } else {
+                setAttractionDict(seaAttractionDict)
+              }
             }}
             renderInput={(params) => <TextField {...params} label="パーク" placeholder='パークを選択'/>}
           />
@@ -58,6 +74,7 @@ export default function SearchFormEN() {
             label="入園日"
             value={entryDate}
             minDate={today}
+            maxDate={new Date(today.getTime()+60*60*24*30*1000)}
             inputFormat="YYYY-MM-DD"
             onChange={(newDate) => {
               setEntryDate(newDate);
@@ -89,20 +106,29 @@ export default function SearchFormEN() {
             renderInput={(params) => <TextField {...params} label="退園時刻" placeholder='退園時刻'/>}
           />
 
-          {/* Number of Rides */}
-          <Typography align="left" variant="subtitle1" gutterBottom>
-          体験するアトラクションの最高数:
-          </Typography>
-          <Slider
-            aria-label="体験するアトラクションの最高数"
-            defaultValue={7}
-            valueLabelDisplay="auto"
-            step={1}
-            min={1}
-            max={15}
-            onChange={(event, newNumber) => {
-              setNumberOfRides(newNumber);
+          {/* Select possible attractions */}
+          <Autocomplete
+            multiple
+            size="small"
+            options={Object.keys(attractionDict)}
+            disableCloseOnSelect
+            onChange={(event, newOptions) => {
+              setAttractionOptions(newOptions);
             }}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="体験したいアトラクション" placeholder="アトラクションを選択" />
+            )}
           />
 
 
