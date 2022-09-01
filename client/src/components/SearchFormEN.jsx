@@ -28,7 +28,6 @@ export default function SearchFormEN() {
   const [attractionOptions, setAttractionOptions] = React.useState("");
   const [warning, setWarning] = React.useState("");
   const [attractionDict, setAttractionDict] = React.useState({});
-  // const [stopAttractionList, setStopAttractionList] = React.useState([]);
   const navigate = useNavigate();
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -78,10 +77,9 @@ export default function SearchFormEN() {
 
               if (park === "Tokyo Disneyland 🏰") {
                 let stopAttractionList = ""
-                axios.get(`https://localhost:5000/landStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                axios.get(`http://localhost:5000/landStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
 
                   stopAttractionList = response.data[0]
-                  console.log(stopAttractionList)
 
                   for (let i=0; i < stopAttractionList.length; i++) {
                     delete landAttractionDictEN[stopAttractionList[i]];
@@ -94,7 +92,7 @@ export default function SearchFormEN() {
 
               } else {
                 let stopAttractionList = ""
-                axios.get(`https://localhost:5000/seaStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                axios.get(`http://localhost:5000/seaStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
                   
                 stopAttractionList = response.data[0]
                   console.log(stopAttractionList)
