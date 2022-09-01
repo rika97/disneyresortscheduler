@@ -10,10 +10,11 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 import moment from "moment";
+import axios from "axios";
 
 import timeOptions from './TimeOptions';
-import seaAttractionDict from './SeaAttractionDictEN';
-import landAttractionDict from './LandAttractionDictEN';
+import seaAttractionDictEN from './SeaAttractionDictEN';
+import landAttractionDictEN from './LandAttractionDictEN';
 
 
 
@@ -27,6 +28,7 @@ export default function SearchFormEN() {
   const [attractionOptions, setAttractionOptions] = React.useState("");
   const [warning, setWarning] = React.useState("");
   const [attractionDict, setAttractionDict] = React.useState({});
+  // const [stopAttractionList, setStopAttractionList] = React.useState([]);
   const navigate = useNavigate();
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -41,7 +43,7 @@ export default function SearchFormEN() {
     } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
       setWarning("Entry time must be later than current time.")
     } else if (attractionOptions.length === 0) {
-      setWarning("Must choose atleast 1 attraction.")
+      setWarning("Must choose atleast one attraction.")
     } else {
       navigate('/results-en',{state:{attractionOptions: attractionOptions, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
@@ -57,16 +59,11 @@ export default function SearchFormEN() {
             disablePortal
             value={park}
             options={["Tokyo Disneyland 🏰", "Tokyo DisneySea 🌏"]}
-            label="パーク"
+            label="Park"
             onChange={(event, newPark) => {
               setPark(newPark);
-              if (newPark === "Tokyo Disneyland 🏰") {
-                setAttractionDict(landAttractionDict)
-              } else {
-                setAttractionDict(seaAttractionDict)
-              }
             }}
-            renderInput={(params) => <TextField {...params} label="Park" placeholder='Choose Park'/>}
+            renderInput={(params) => <TextField {...params} label="Park" placeholder='Choose a park'/>}
           />
 
           {/* Entry Date */}
@@ -78,6 +75,39 @@ export default function SearchFormEN() {
             inputFormat="YYYY-MM-DD"
             onChange={(newDate) => {
               setEntryDate(newDate);
+
+              if (park === "Tokyo Disneyland 🏰") {
+                let stopAttractionList = ""
+                axios.get(`http://localhost:5000/landStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+
+                  stopAttractionList = response.data[0]
+                  console.log(stopAttractionList)
+
+                  for (let i=0; i < stopAttractionList.length; i++) {
+                    delete landAttractionDictEN[stopAttractionList[i]];
+                  }
+  
+                  setAttractionDict(landAttractionDictEN)
+                
+                });
+
+
+              } else {
+                let stopAttractionList = ""
+                axios.get(`http://localhost:5000/seaStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                  
+                stopAttractionList = response.data[0]
+                  console.log(stopAttractionList)
+
+                  for (let i=0; i < stopAttractionList.length; i++) {
+                    delete seaAttractionDictEN[stopAttractionList[i]];
+                  }
+  
+                  setAttractionDict(seaAttractionDictEN)
+                
+                });
+
+              };
             }}
             renderInput={(params) => <TextField {...params} />}
           />

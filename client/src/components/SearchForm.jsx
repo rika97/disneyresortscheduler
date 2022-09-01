@@ -10,6 +10,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 import moment from "moment";
+import axios from "axios";
 
 import timeOptions from './TimeOptions';
 import seaAttractionDict from './SeaAttractionDict';
@@ -27,6 +28,7 @@ export default function SearchFormEN() {
   const [attractionOptions, setAttractionOptions] = React.useState("");
   const [warning, setWarning] = React.useState("");
   const [attractionDict, setAttractionDict] = React.useState({});
+  // const [stopAttractionList, setStopAttractionList] = React.useState([]);
   const navigate = useNavigate();
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -37,11 +39,11 @@ export default function SearchFormEN() {
     if (park ==="") {
       setWarning("パークを選択してください")
     } else if (leaveTime <= entryTime) {
-      setWarning("退園時刻は入園時刻よりも後でなければいけません")
+      setWarning("退園時刻は入園時刻よりも後から指定してください")
     } else if ( (moment(entryDate.$d).format("YYYY-MM-DD") === moment(today).format("YYYY-MM-DD")) &&  (entryTime <= currentTime) ) {
-      setWarning("入園時刻は現時刻よりも後でなければいけません")
+      setWarning("入園時刻は現在時刻よりも後から指定してください")
     } else if (attractionOptions.length === 0) {
-      setWarning("アトラクションを一つ以上選択してください")
+      setWarning("アトラクションは必ず一つ以上選択してください")
     } else {
       navigate('/results',{state:{attractionOptions: attractionOptions, entryTime: entryTime, leaveTime: leaveTime,
                             dateId: moment(entryDate.$d).format("YYYY-MM-DD"), park: park}});
@@ -60,24 +62,52 @@ export default function SearchFormEN() {
             label="パーク"
             onChange={(event, newPark) => {
               setPark(newPark);
-              if (newPark === "東京ディズニーランド 🏰") {
-                setAttractionDict(landAttractionDict)
-              } else {
-                setAttractionDict(seaAttractionDict)
-              }
             }}
             renderInput={(params) => <TextField {...params} label="パーク" placeholder='パークを選択'/>}
           />
 
           {/* Entry Date */}
           <DatePicker
-            label="入園日"
+            label="来園日"
             value={entryDate}
             minDate={today}
             maxDate={new Date(today.getTime()+60*60*24*30*1000)}
             inputFormat="YYYY-MM-DD"
             onChange={(newDate) => {
               setEntryDate(newDate);
+
+              if (park === "東京ディズニーランド 🏰") {
+                let stopAttractionList = ""
+                axios.get(`http://localhost:5000/landStop/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+
+                  stopAttractionList = response.data[0]
+                  console.log(stopAttractionList)
+
+                  for (let i=0; i < stopAttractionList.length; i++) {
+                    delete landAttractionDict[stopAttractionList[i]];
+                  }
+  
+                  setAttractionDict(landAttractionDict)
+                
+                });
+
+
+              } else {
+                let stopAttractionList = ""
+                axios.get(`http://localhost:5000/seaStop/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                  
+                stopAttractionList = response.data[0]
+                  console.log(stopAttractionList)
+
+                  for (let i=0; i < stopAttractionList.length; i++) {
+                    delete seaAttractionDict[stopAttractionList[i]];
+                  }
+  
+                  setAttractionDict(seaAttractionDict)
+                
+                });
+
+              };
             }}
             renderInput={(params) => <TextField {...params} />}
           />
@@ -86,12 +116,12 @@ export default function SearchFormEN() {
           <Autocomplete
             disablePortal
             options={timeOptions}
-            label="入園時刻"
+            label="来園時刻"
             onChange={(event, newEntryTime) => {
               setEntryTime(newEntryTime?.timeValue);
             }}
             getOptionLabel={(option) => option.label}
-            renderInput={(params) => <TextField {...params} label="入園時刻" placeholder='入園時刻'/>}
+            renderInput={(params) => <TextField {...params} label="来園時刻" placeholder='来園時刻'/>}
           />
 
           {/* Leave Time */}

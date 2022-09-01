@@ -12,6 +12,13 @@ import Navbar from '../components/Navbar';
 const Results = () => {
     const [displayHeader, setDisplayHeader] = useState('');
     const [displayData, setDisplayData] = useState('');
+    const [stopAttraction, setStopAttraction] = useState([]);
+    const [stopShow, setStopShow] = useState([]);
+    const [stopGreeting, setStopGreeting] = useState([]);
+    const [stopShop, setStopShop] = useState([]);
+    const [stopRestaurant, setStopRestaurant] = useState([]);
+    const [stopService, setStopService] = useState([]);
+    const [forecastData, setForecastData] = useState(["不明", "不明", "不明", "不明"]);
     const [isLoading, setIsLoading] = useState('true');
     const location = useLocation();
     const navigate = useNavigate();
@@ -26,7 +33,8 @@ const Results = () => {
 
     const formatTime = (time) => {
       return String(time).replace(/(.{2})$/,':$1')
-    }
+    };
+
 
     const fetchData = async () => {
  
@@ -38,7 +46,34 @@ const Results = () => {
       const attractionOptions = location.state.attractionOptions;
       let attractionDict = {};
 
+      // Weather Scraper
+      axios.get(`http://localhost:5000/forecast/${dateId}`).then((response) => {
+        setForecastData(response.data);
+      });
 
+      // Stopped Attractions Scraper
+      if (park === "東京ディズニーランド 🏰") {
+        axios.get(`http://localhost:5000/landStop/${dateId}`).then((response) => {
+          setStopAttraction(response.data[0]);
+          setStopShow(response.data[1]);
+          setStopGreeting(response.data[2]);
+          setStopShop(response.data[3]);
+          setStopRestaurant(response.data[4]);
+          setStopService(response.data[5]);
+
+      });
+      } else {
+        axios.get(`http://localhost:5000/seaStop/${dateId}`).then((response) => {
+          setStopAttraction(response.data[0]);
+          setStopShow(response.data[1]);
+          setStopGreeting(response.data[2]);
+          setStopShop(response.data[3]);
+          setStopRestaurant(response.data[4]);
+          setStopService(response.data[5]);
+      });
+      }
+
+      // Schedule Generator
       if (park === "東京ディズニーランド 🏰") {
         for (let i=0; i < attractionOptions.length; i++) {
           attractionDict[attractionOptions[i]] = landAttractionDict[attractionOptions[i]]
@@ -60,7 +95,7 @@ const Results = () => {
 
 
       for (let i=0; i < Object.values(attractionDict).length; i++) {
-        const {data} = await axios.get(`http://localhost:5000/${Object.values(attractionDict)[i]}/${dateId}`)
+        const {data} = await axios.get(`http://localhost:5000/waitTimes/${Object.values(attractionDict)[i]}/${dateId}`)
         const availableTimesData = data.splice(entryTimeIndex, leaveTimeIndex-entryTimeIndex+1)
         waitList.push(availableTimesData)
       }
@@ -75,7 +110,6 @@ const Results = () => {
         data: waitList
       };
 
-      // schedule generator
       
       let userSchedule = [];
 
@@ -145,6 +179,7 @@ const Results = () => {
       setDisplayData(displaySchedule);
       setDisplayHeader([park, dateId, formatTime(entryTime), formatTime(leaveTime)]);
       setIsLoading(false);
+    
       
       };
 
@@ -166,16 +201,41 @@ const Results = () => {
   return (
     <div>
         <Navbar />
-        <Grid sx={{ mb:4 }}>
-          <Typography variant="h4" color="primary" sx={{mt: 4}}>おすすめスケジュール</Typography>
-          <Typography sx={{mt: 1}} variant="h6">{displayHeader[0]}</Typography>
-          <Typography variant="h6">{displayHeader[1]}</Typography>
-          <Typography sx={{mb: 2}} variant="h6">{displayHeader[2]}~{displayHeader[3]}</Typography>
+        <Grid sx={{ mb:4, ml: 2, mr: 2}}>
+          <Typography variant="h4" color="primary" sx={{mt: 3}}>おすすめスケジュール</Typography>
+          <Typography sx={{mt: 1}} variant="h5">{displayHeader[0]}</Typography>
+          <Typography variant="h6">来園日時：{displayHeader[1]}, {displayHeader[2]}~{displayHeader[3]}</Typography>
+          <Typography sx={{mb: 2}} color="secondary">天気：{forecastData[0]}, 降水確率：{forecastData[1]}, 気温：{forecastData[2]}, {forecastData[3]}</Typography>
           {Object.entries(displayData).map(([key, value]) => (
           <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]}分)</Typography>
         ))}
-          <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（待ち時間はあくまでも予想です。）</Typography>
-          <Button variant="outlined" onClick={()=>{navigate('/')}}>戻る</Button>
+          <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（天気予報と待ち時間はあくまでも予想です。）</Typography>
+          <Button width="500px" style={{ width: 200 }} variant="contained" onClick={()=>{navigate('/')}}>戻る</Button>
+          <Typography sx={{mt: 3}} variant="h6">休止施設情報：</Typography>
+          <Typography color="secondary" sx={{ mt: 2}}>アトラクション</Typography>
+          {Object.entries(stopAttraction).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>パレード・ショー</Typography>
+          {Object.entries(stopShow).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>キャラクターグリーティング</Typography>
+          {Object.entries(stopGreeting).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>ショップ</Typography>
+          {Object.entries(stopShop).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>レストラン</Typography>
+          {Object.entries(stopRestaurant).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>サービス施設</Typography>
+          {Object.entries(stopService).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
         </Grid>
     </div>
   )

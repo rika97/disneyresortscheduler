@@ -1,7 +1,8 @@
 import React from 'react';
-import { AppBar, Box, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button, IconButton, Grid } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useNavigate } from 'react-router-dom';
+import castleIcon from '../assets/castleIcon.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,14 +17,18 @@ const Navbar = () => {
             aria-label="menu"
           >
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            東京ディズニーリゾート・スケジュール計画サイト
+          <Grid >
+           <img src={castleIcon} alt="Logo" />
+          </Grid>
+  
+          <Typography variant="h6" sx={{ ml: 1, typography: { sm: 'h6', xs: 'body1' } }}>
+            ディズニー 行動計画自動作成プログラム
           </Typography>
-          <Button color="inherit" onClick={()=>{navigate("/en")}}> <LanguageIcon />English</Button>
+          <Button sx={{ ml: "auto" }} color="inherit" onClick={()=>{navigate("/en")}}> <LanguageIcon />English</Button>
         </Toolbar>
       </AppBar>
     </Box>
   )
 }
 
-export default Navbar
+export default Navbar;

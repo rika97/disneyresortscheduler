@@ -1,7 +1,8 @@
 import React from 'react';
-import { AppBar, Box, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button, IconButton, Grid } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useNavigate } from 'react-router-dom';
+import castleIcon from '../assets/castleIcon.png';
 
 const NavbarEN = () => {
   const navigate = useNavigate();
@@ -16,10 +17,14 @@ const NavbarEN = () => {
             aria-label="menu"
           >
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Tokyo Disney Resort Scheduler
+          <Grid >
+           <img src={castleIcon} alt="Logo" />
+          </Grid>
+  
+          <Typography sx={{ ml: 1, typography: { sm: 'h6', xs: 'body1' }}}>
+            Tokyo Disney Resort Schedule Generator
           </Typography>
-          <Button color="inherit" onClick={()=>{navigate("/")}}> <LanguageIcon />日本語</Button>
+          <Button sx={{ ml: "auto" }} color="inherit" onClick={()=>{navigate("/")}}> <LanguageIcon />日本語</Button>
         </Toolbar>
       </AppBar>
     </Box>

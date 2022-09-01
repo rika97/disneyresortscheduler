@@ -12,6 +12,13 @@ import NavbarEN from '../components/NavbarEN';
 const Results = () => {
     const [displayHeader, setDisplayHeader] = useState('');
     const [displayData, setDisplayData] = useState('');
+    const [stopAttraction, setStopAttraction] = useState([]);
+    const [stopShow, setStopShow] = useState([]);
+    const [stopGreeting, setStopGreeting] = useState([]);
+    const [stopShop, setStopShop] = useState([]);
+    const [stopRestaurant, setStopRestaurant] = useState([]);
+    const [stopService, setStopService] = useState([]);
+    const [forecastData, setForecastData] = useState(["N/A", "N/A", "N/A", "N/A"]);
     const [isLoading, setIsLoading] = useState('true');
     const location = useLocation();
     const navigate = useNavigate();
@@ -26,7 +33,8 @@ const Results = () => {
 
     const formatTime = (time) => {
       return String(time).replace(/(.{2})$/,':$1')
-    }
+    };
+
 
     const fetchData = async () => {
  
@@ -38,8 +46,36 @@ const Results = () => {
       const attractionOptions = location.state.attractionOptions;
       let attractionDict = {};
 
+      // Weather Scraper
+      axios.get(`http://localhost:5000/forecast/${dateId}`).then((response) => {
 
-      if (park === "東京ディズニーランド 🏰") {
+        setForecastData(response.data);
+      });
+
+      // Stopped Attractions Scraper
+      if (park === "TokyoDisneyland 🏰") {
+        axios.get(`http://localhost:5000/landStopEN/${dateId}`).then((response) => {
+          setStopAttraction(response.data[0]);
+          setStopShow(response.data[1]);
+          setStopGreeting(response.data[2]);
+          setStopShop(response.data[3]);
+          setStopRestaurant(response.data[4]);
+          setStopService(response.data[5]);
+
+      });
+      } else {
+        axios.get(`http://localhost:5000/seaStopEN/${dateId}`).then((response) => {
+          setStopAttraction(response.data[0]);
+          setStopShow(response.data[1]);
+          setStopGreeting(response.data[2]);
+          setStopShop(response.data[3]);
+          setStopRestaurant(response.data[4]);
+          setStopService(response.data[5]);
+      });
+      }
+
+      // Schedule Generator
+      if (park === "Tokyo Disneyland 🏰") {
         for (let i=0; i < attractionOptions.length; i++) {
           attractionDict[attractionOptions[i]] = landAttractionDictEN[attractionOptions[i]]
         }
@@ -60,7 +96,7 @@ const Results = () => {
 
 
       for (let i=0; i < Object.values(attractionDict).length; i++) {
-        const {data} = await axios.get(`http://localhost:5000/${Object.values(attractionDict)[i]}/${dateId}`)
+        const {data} = await axios.get(`http://localhost:5000/waitTimes/${Object.values(attractionDict)[i]}/${dateId}`)
         const availableTimesData = data.splice(entryTimeIndex, leaveTimeIndex-entryTimeIndex+1)
         waitList.push(availableTimesData)
       }
@@ -75,7 +111,6 @@ const Results = () => {
         data: waitList
       };
 
-      // schedule generator
       
       let userSchedule = [];
 
@@ -145,6 +180,7 @@ const Results = () => {
       setDisplayData(displaySchedule);
       setDisplayHeader([park, dateId, formatTime(entryTime), formatTime(leaveTime)]);
       setIsLoading(false);
+    
       
       };
 
@@ -166,16 +202,41 @@ const Results = () => {
   return (
     <div>
         <NavbarEN />
-        <Grid sx={{ mb:4 }}>
-          <Typography variant="h4" color="primary" sx={{mt: 4}}>Suggested Itinerary</Typography>
-          <Typography sx={{mt: 1}} variant="h6">{displayHeader[0]}</Typography>
-          <Typography variant="h6">{displayHeader[1]}</Typography>
-          <Typography sx={{mb: 2}} variant="h6">{displayHeader[2]}~{displayHeader[3]}</Typography>
+        <Grid sx={{ mb:4, ml: 2, mr: 2}}>
+          <Typography variant="h4" color="primary" sx={{mt: 3}}>Suggested Schedule</Typography>
+          <Typography sx={{mt: 1}} variant="h5">{displayHeader[0]}</Typography>
+          <Typography variant="h6">Scheduled Date: {displayHeader[1]}, {displayHeader[2]}~{displayHeader[3]}</Typography>
+          <Typography sx={{mb: 2}} color="secondary">Temperature: {forecastData[2]} (High), {forecastData[3]} (Low), Chance of Rain: {forecastData[1]}</Typography>
           {Object.entries(displayData).map(([key, value]) => (
           <Typography key={key}> {formatTime(value[0][0])}~{formatTime(value[0][1])}: {value[1]} ({value[2]} mins)</Typography>
         ))}
-          <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>（Wait times are merely predictions.）</Typography>
-          <Button variant="outlined" onClick={()=>{navigate('/')}}>Go back</Button>
+          <Typography variant="body2" color="primary" sx={{ mt: 3, mb: 3}}>(Wait times are merely predictions.)</Typography>
+          <Button width="500px" style={{ width: 200 }} variant="contained" onClick={()=>{navigate('/')}}>Go back</Button>
+          <Typography sx={{mt: 3}} variant="h6">Temporary Closure Info:</Typography>
+          <Typography color="secondary" sx={{ mt: 2}}>Attractions</Typography>
+          {Object.entries(stopAttraction).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>Parades and Shows</Typography>
+          {Object.entries(stopShow).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>Disney Character Greetings</Typography>
+          {Object.entries(stopGreeting).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>Shops</Typography>
+          {Object.entries(stopShop).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>Restaurants</Typography>
+          {Object.entries(stopRestaurant).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
+          <Typography color="secondary" sx={{ mt: 2}}>Guest Services</Typography>
+          {Object.entries(stopService).map(([key, value]) => (
+          <Typography variant="body2" key={key}>{value}</Typography>
+          ))}
         </Grid>
     </div>
   )
