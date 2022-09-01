@@ -7,6 +7,7 @@ import {useLocation} from 'react-router-dom';
 import seaAttractionDict from '../components/SeaAttractionDict';
 import landAttractionDict from '../components/LandAttractionDict';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 
 const Results = () => {
@@ -237,6 +238,7 @@ const Results = () => {
           <Typography variant="body2" key={key}>{value}</Typography>
           ))}
         </Grid>
+        <Footer />
     </div>
   )
 }

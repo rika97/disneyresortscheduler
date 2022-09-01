@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Box, Toolbar, Typography, Button, IconButton, Grid } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button, Grid, Link } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useNavigate } from 'react-router-dom';
 import castleIcon from '../assets/castleIcon.png';
@@ -10,20 +10,11 @@ const NavbarEN = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-          >
-          </IconButton>
-          <Grid >
+          <Grid onClick={()=>{navigate('/en')}}>
            <img src={castleIcon} alt="Logo" />
           </Grid>
   
-          <Typography sx={{ ml: 1, typography: { sm: 'h6', xs: 'body1' }}}>
-            Tokyo Disney Resort Schedule Generator
-          </Typography>
+          <Link underline="none" variant="body1" color='#ffffff' href="/en">Tokyo Disney Resort Schedule Generator</Link>
           <Button sx={{ ml: "auto" }} color="inherit" onClick={()=>{navigate("/")}}> <LanguageIcon />日本語</Button>
         </Toolbar>
       </AppBar>

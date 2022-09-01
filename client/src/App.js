@@ -1,5 +1,5 @@
 import './App.css';
-import { Home, Results, HomeEN, ResultsEN } from './pages';
+import { Home, Results, HomeEN, ResultsEN, About, AboutEN } from './pages';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import CssBaseline from '@mui/material/CssBaseline'
@@ -25,6 +25,8 @@ function App() {
             <Route exact path="/en" element={<HomeEN />} />
             <Route exact path="/results" element={<Results />} />
             <Route exact path="/results-en" element={<ResultsEN />} />
+            <Route exact path="/about" element={<About />} />
+            <Route exact path="/about-en" element={<AboutEN />} />
           </Routes>
         </div>
       </BrowserRouter>
