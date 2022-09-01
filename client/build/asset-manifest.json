@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.073c9b0a.css",
-    "main.js": "/static/js/main.9fe27757.js",
+    "main.js": "/static/js/main.ba214263.js",
     "static/js/787.cf0bfaac.chunk.js": "/static/js/787.cf0bfaac.chunk.js",
     "static/media/amusementpark.svg": "/static/media/amusementpark.78f690c20a0ad58e95b8b554b380044d.svg",
     "index.html": "/index.html",
     "main.073c9b0a.css.map": "/static/css/main.073c9b0a.css.map",
-    "main.9fe27757.js.map": "/static/js/main.9fe27757.js.map",
+    "main.ba214263.js.map": "/static/js/main.ba214263.js.map",
     "787.cf0bfaac.chunk.js.map": "/static/js/787.cf0bfaac.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.9fe27757.js"
+    "static/js/main.ba214263.js"
   ]
 }

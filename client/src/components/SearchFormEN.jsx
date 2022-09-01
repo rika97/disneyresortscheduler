@@ -78,7 +78,7 @@ export default function SearchFormEN() {
 
               if (park === "Tokyo Disneyland 🏰") {
                 let stopAttractionList = ""
-                axios.get(`http://localhost:5000/landStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                axios.get(`https://tdrscheduler.herokuapp.com/landStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
 
                   stopAttractionList = response.data[0]
                   console.log(stopAttractionList)
@@ -94,7 +94,7 @@ export default function SearchFormEN() {
 
               } else {
                 let stopAttractionList = ""
-                axios.get(`http://localhost:5000/seaStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
+                axios.get(`https://tdrscheduler.herokuapp.com/seaStopEN/${moment(entryDate.$d).format("YYYY-MM-DD")}`).then((response) => {
                   
                 stopAttractionList = response.data[0]
                   console.log(stopAttractionList)

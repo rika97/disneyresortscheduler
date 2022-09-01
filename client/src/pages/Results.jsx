@@ -48,13 +48,13 @@ const Results = () => {
       let attractionDict = {};
 
       // Weather Scraper
-      axios.get(`http://localhost:5000/forecast/${dateId}`).then((response) => {
+      axios.get(`https://tdrscheduler.herokuapp.com/forecast/${dateId}`).then((response) => {
         setForecastData(response.data);
       });
 
       // Stopped Attractions Scraper
       if (park === "東京ディズニーランド 🏰") {
-        axios.get(`http://localhost:5000/landStop/${dateId}`).then((response) => {
+        axios.get(`https://tdrscheduler.herokuapp.com/landStop/${dateId}`).then((response) => {
           setStopAttraction(response.data[0]);
           setStopShow(response.data[1]);
           setStopGreeting(response.data[2]);
@@ -64,7 +64,7 @@ const Results = () => {
 
       });
       } else {
-        axios.get(`http://localhost:5000/seaStop/${dateId}`).then((response) => {
+        axios.get(`https://tdrscheduler.herokuapp.com/seaStop/${dateId}`).then((response) => {
           setStopAttraction(response.data[0]);
           setStopShow(response.data[1]);
           setStopGreeting(response.data[2]);
@@ -96,7 +96,7 @@ const Results = () => {
 
 
       for (let i=0; i < Object.values(attractionDict).length; i++) {
-        const {data} = await axios.get(`http://localhost:5000/waitTimes/${Object.values(attractionDict)[i]}/${dateId}`)
+        const {data} = await axios.get(`https://tdrscheduler.herokuapp.com/waitTimes/${Object.values(attractionDict)[i]}/${dateId}`)
         const availableTimesData = data.splice(entryTimeIndex, leaveTimeIndex-entryTimeIndex+1)
         waitList.push(availableTimesData)
       }
